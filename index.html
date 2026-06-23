@@ -253,11 +253,36 @@
         position: relative;
         height: 160px;
         margin: 18px 0;
+        overflow: hidden;
         border-radius: 8px;
         background:
           linear-gradient(#d8e0e8 1px, transparent 1px) 0 34px / 100% 24px,
           #fbfcfe;
         border: 1px solid var(--line);
+      }
+
+      .staff-track {
+        position: absolute;
+        inset: 0;
+      }
+
+      .scroll-staff .staff-track {
+        width: 760px;
+      }
+
+      .staff-playhead {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 45%;
+        z-index: 2;
+        width: 3px;
+        background: var(--blue);
+        box-shadow: 0 0 0 6px rgba(38, 110, 241, 0.12);
+      }
+
+      .practice-panel[data-playing="true"] .scroll-staff .staff-track {
+        animation: sheet-scroll 5.9s linear forwards;
       }
 
       .note {
@@ -645,6 +670,16 @@
         }
       }
 
+      @keyframes sheet-scroll {
+        from {
+          transform: translateX(0);
+        }
+
+        to {
+          transform: translateX(-330px);
+        }
+      }
+
       @keyframes pulse-note {
         50% {
           transform: scaleY(1.2);
@@ -804,13 +839,20 @@
                   <strong>Sheet form</strong>
                   <span class="label">Measure 5</span>
                 </div>
-                <div class="staff">
-                  <span class="note done" data-note="E" style="left: 54px; top: 74px">E</span>
-                  <span class="note done" data-note="E" style="left: 124px; top: 74px">E</span>
-                  <span class="note now" data-note="F" style="left: 194px; top: 50px">F</span>
-                  <span class="note" data-note="G" style="left: 264px; top: 74px">G</span>
-                  <span class="note" data-note="G" style="left: 334px; top: 98px">G</span>
-                  <span class="note" data-note="F" style="left: 404px; top: 50px">F</span>
+                <div class="staff scroll-staff">
+                  <span class="staff-playhead"></span>
+                  <div class="staff-track">
+                    <span class="note done" data-note="E" style="left: 54px; top: 74px">E</span>
+                    <span class="note done" data-note="E" style="left: 124px; top: 74px">E</span>
+                    <span class="note now" data-note="F" style="left: 194px; top: 50px">F</span>
+                    <span class="note" data-note="G" style="left: 264px; top: 74px">G</span>
+                    <span class="note" data-note="G" style="left: 334px; top: 98px">G</span>
+                    <span class="note" data-note="F" style="left: 404px; top: 50px">F</span>
+                    <span class="note" data-note="E" style="left: 474px; top: 74px">E</span>
+                    <span class="note" data-note="D" style="left: 544px; top: 98px">D</span>
+                    <span class="note" data-note="C" style="left: 614px; top: 122px">C</span>
+                    <span class="note" data-note="C" style="left: 684px; top: 122px">C</span>
+                  </div>
                 </div>
               </div>
               <div class="panel stack piano-view">
