@@ -267,7 +267,7 @@
       }
 
       .scroll-staff .staff-track {
-        width: 760px;
+        width: 1080px;
       }
 
       .staff-playhead {
@@ -281,8 +281,9 @@
         box-shadow: 0 0 0 6px rgba(38, 110, 241, 0.12);
       }
 
-      .practice-panel[data-playing="true"] .scroll-staff .staff-track {
-        animation: sheet-scroll 5.9s linear forwards;
+      .practice-panel[data-playing="true"] .scroll-staff .staff-track,
+      .practice-panel[data-playing="true"] .piano-roll-track {
+        animation: score-scroll var(--playback-duration, 6.9s) linear forwards;
       }
 
       .note {
@@ -545,13 +546,16 @@
       .playhead {
         position: absolute;
         inset: 0 auto 0 45%;
+        z-index: 2;
         width: 3px;
         background: var(--blue);
         box-shadow: 0 0 0 6px rgba(38, 110, 241, 0.12);
       }
 
-      .practice-panel[data-playing="true"] .playhead {
-        animation: playhead-slide 3s linear infinite;
+      .piano-roll-track {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
       }
 
       .roll-note {
@@ -563,6 +567,11 @@
 
       .roll-note.now {
         background: var(--blue);
+      }
+
+      .roll-note.sample-active {
+        background: var(--blue);
+        box-shadow: 0 0 0 7px rgba(38, 110, 241, 0.12);
       }
 
       .keyboard {
@@ -615,7 +624,7 @@
 
       .sample-strip {
         display: grid;
-        grid-template-columns: repeat(14, 1fr);
+        grid-template-columns: repeat(15, 1fr);
         gap: 6px;
       }
 
@@ -652,31 +661,21 @@
         grid-template-columns: 1fr;
       }
 
-      .practice-panel[data-playing="true"] .roll-note.now {
+      .practice-panel[data-playing="true"] .roll-note.sample-active {
         animation: pulse-note 0.9s ease-in-out infinite;
       }
 
-      .practice-panel[data-playing="true"] .key.active {
+      .practice-panel[data-playing="true"] .key.sample-active {
         animation: press-key 0.9s ease-in-out infinite;
       }
 
-      @keyframes playhead-slide {
-        from {
-          left: 12%;
-        }
-
-        to {
-          left: 88%;
-        }
-      }
-
-      @keyframes sheet-scroll {
+      @keyframes score-scroll {
         from {
           transform: translateX(0);
         }
 
         to {
-          transform: translateX(-330px);
+          transform: translateX(-700px);
         }
       }
 
@@ -825,6 +824,7 @@
               <span class="sample-step" data-sample-index="11">E</span>
               <span class="sample-step" data-sample-index="12">E</span>
               <span class="sample-step" data-sample-index="13">D</span>
+              <span class="sample-step" data-sample-index="14">D</span>
             </div>
             <div class="sample-status">Ready to sample Ode to Joy.</div>
             <div class="view-toggle">
@@ -842,16 +842,21 @@
                 <div class="staff scroll-staff">
                   <span class="staff-playhead"></span>
                   <div class="staff-track">
-                    <span class="note done" data-note="E" style="left: 54px; top: 74px">E</span>
-                    <span class="note done" data-note="E" style="left: 124px; top: 74px">E</span>
-                    <span class="note now" data-note="F" style="left: 194px; top: 50px">F</span>
-                    <span class="note" data-note="G" style="left: 264px; top: 74px">G</span>
-                    <span class="note" data-note="G" style="left: 334px; top: 98px">G</span>
-                    <span class="note" data-note="F" style="left: 404px; top: 50px">F</span>
-                    <span class="note" data-note="E" style="left: 474px; top: 74px">E</span>
-                    <span class="note" data-note="D" style="left: 544px; top: 98px">D</span>
-                    <span class="note" data-note="C" style="left: 614px; top: 122px">C</span>
-                    <span class="note" data-note="C" style="left: 684px; top: 122px">C</span>
+                    <span class="note" data-sample-index="0" data-note="E" style="left: 54px; top: 74px">E</span>
+                    <span class="note" data-sample-index="1" data-note="E" style="left: 118px; top: 74px">E</span>
+                    <span class="note" data-sample-index="2" data-note="F" style="left: 182px; top: 50px">F</span>
+                    <span class="note" data-sample-index="3" data-note="G" style="left: 246px; top: 38px">G</span>
+                    <span class="note" data-sample-index="4" data-note="G" style="left: 310px; top: 38px">G</span>
+                    <span class="note" data-sample-index="5" data-note="F" style="left: 374px; top: 50px">F</span>
+                    <span class="note" data-sample-index="6" data-note="E" style="left: 438px; top: 74px">E</span>
+                    <span class="note" data-sample-index="7" data-note="D" style="left: 502px; top: 98px">D</span>
+                    <span class="note" data-sample-index="8" data-note="C" style="left: 566px; top: 122px">C</span>
+                    <span class="note" data-sample-index="9" data-note="C" style="left: 630px; top: 122px">C</span>
+                    <span class="note" data-sample-index="10" data-note="D" style="left: 694px; top: 98px">D</span>
+                    <span class="note" data-sample-index="11" data-note="E" style="left: 758px; top: 74px">E</span>
+                    <span class="note" data-sample-index="12" data-note="E" style="left: 822px; top: 74px">E</span>
+                    <span class="note" data-sample-index="13" data-note="D" style="left: 886px; top: 98px">D</span>
+                    <span class="note" data-sample-index="14" data-note="D" style="left: 950px; top: 98px">D</span>
                   </div>
                 </div>
               </div>
@@ -862,35 +867,47 @@
                 </div>
                 <div class="piano-roll">
                   <span class="playhead"></span>
-                  <span class="roll-note" style="left: 34px; top: 112px; width: 54px"></span>
-                  <span class="roll-note" style="left: 96px; top: 112px; width: 54px"></span>
-                  <span class="roll-note now" style="left: 158px; top: 80px; width: 70px"></span>
-                  <span class="roll-note" style="left: 236px; top: 48px; width: 54px"></span>
-                  <span class="roll-note" style="left: 298px; top: 48px; width: 54px"></span>
+                  <div class="piano-roll-track">
+                    <span class="roll-note" data-sample-index="0" style="left: 54px; top: 96px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="1" style="left: 118px; top: 96px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="2" style="left: 182px; top: 72px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="3" style="left: 246px; top: 48px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="4" style="left: 310px; top: 48px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="5" style="left: 374px; top: 72px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="6" style="left: 438px; top: 96px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="7" style="left: 502px; top: 120px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="8" style="left: 566px; top: 144px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="9" style="left: 630px; top: 144px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="10" style="left: 694px; top: 120px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="11" style="left: 758px; top: 96px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="12" style="left: 822px; top: 96px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="13" style="left: 886px; top: 120px; width: 54px"></span>
+                    <span class="roll-note" data-sample-index="14" style="left: 950px; top: 120px; width: 108px"></span>
+                  </div>
                 </div>
                 <div class="keyboard">
-                  <span class="key" data-key="C">C</span>
+                  <span class="key" data-key-note="C">C</span>
                   <span class="key black"></span>
-                  <span class="key" data-key="D">D</span>
+                  <span class="key" data-key-note="D">D</span>
                   <span class="key black"></span>
-                  <span class="key" data-key="E">E</span>
-                  <span class="key active" data-key="F">F</span>
+                  <span class="key" data-key-note="E">E</span>
+                  <span class="key" data-key-note="F">F</span>
                   <span class="key black"></span>
-                  <span class="key" data-key="G">G</span>
+                  <span class="key" data-key-note="G">G</span>
                   <span class="key black"></span>
                   <span class="key" data-key="A">A</span>
                   <span class="key black"></span>
                   <span class="key" data-key="B">B</span>
-                  <span class="key" data-key="C">C</span>
+                  <span class="key">C</span>
                   <span class="key" data-key="D">D</span>
                 </div>
               </div>
             </div>
             <div class="feedback">
-              <div class="target-note">F</div>
+              <div class="target-note">E</div>
               <div class="panel soft stack">
                 <div class="label">Listening through microphone</div>
-                <div class="big">Play F while the blue line passes it</div>
+                <div class="big">Play each note as the blue line passes it</div>
                 <div class="timeline">
                   <span class="beat good"></span>
                   <span class="beat good"></span>
@@ -1095,7 +1112,27 @@
       const sampleSteps = [...document.querySelectorAll(".sample-step")];
       const sampleStatus = document.querySelector(".sample-status");
       const targetNote = document.querySelector(".target-note");
-      const sampleNotes = ["E", "E", "F", "G", "G", "F", "E", "D", "C", "C", "D", "E", "E", "D"];
+      const sampleEvents = [
+        { note: "E", beats: 1 },
+        { note: "E", beats: 1 },
+        { note: "F", beats: 1 },
+        { note: "G", beats: 1 },
+        { note: "G", beats: 1 },
+        { note: "F", beats: 1 },
+        { note: "E", beats: 1 },
+        { note: "D", beats: 1 },
+        { note: "C", beats: 1 },
+        { note: "C", beats: 1 },
+        { note: "D", beats: 1 },
+        { note: "E", beats: 1 },
+        { note: "E", beats: 1 },
+        { note: "D", beats: 1 },
+        { note: "D", beats: 2 },
+      ];
+      const beatSeconds = 0.43;
+      const totalBeats = sampleEvents.reduce((sum, event) => sum + event.beats, 0);
+      const totalPlaybackSeconds = totalBeats * beatSeconds;
+      practicePanel.style.setProperty("--playback-duration", `${totalPlaybackSeconds}s`);
       const noteFrequencies = {
         C: 261.63,
         D: 293.66,
@@ -1135,6 +1172,7 @@
         clearSampleHighlights();
         practicePanel.dataset.playing = "false";
         playbackButton.textContent = "Play Ode to Joy sample";
+        targetNote.textContent = "E";
       }
 
       function playTone(note, startTime, duration) {
@@ -1152,13 +1190,13 @@
       }
 
       function highlightSampleStep(index) {
-        const note = sampleNotes[index];
+        const event = sampleEvents[index];
         clearSampleHighlights();
-        targetNote.textContent = note;
-        sampleStatus.textContent = `Now playing ${note}`;
+        targetNote.textContent = event.note;
+        sampleStatus.textContent = `Now playing ${event.note}`;
         sampleSteps[index].classList.add("sample-active");
         document
-          .querySelectorAll(`[data-note="${note}"], [data-key="${note}"]`)
+          .querySelectorAll(`[data-sample-index="${index}"], [data-key-note="${event.note}"]`)
           .forEach((item) => item.classList.add("sample-active"));
       }
 
@@ -1173,24 +1211,28 @@
 
         stopSample();
         audioContext = audioContext || new AudioContext();
+        audioContext.resume();
+        practicePanel.offsetWidth;
         practicePanel.dataset.playing = "true";
         playbackButton.textContent = "Pause sample";
         sampleStatus.textContent = "Sampling Ode to Joy...";
 
-        const stepSeconds = 0.42;
-        const now = audioContext.currentTime + 0.04;
+        const startTime = audioContext.currentTime + 0.08;
+        let elapsedBeats = 0;
 
-        sampleNotes.forEach((note, index) => {
-          playTone(note, now + index * stepSeconds, stepSeconds * 0.82);
-          sampleTimers.push(setTimeout(() => highlightSampleStep(index), index * stepSeconds * 1000));
+        sampleEvents.forEach((event, index) => {
+          const offsetSeconds = elapsedBeats * beatSeconds;
+          const durationSeconds = event.beats * beatSeconds;
+          playTone(event.note, startTime + offsetSeconds, durationSeconds * 0.88);
+          sampleTimers.push(setTimeout(() => highlightSampleStep(index), offsetSeconds * 1000));
+          elapsedBeats += event.beats;
         });
 
         sampleTimers.push(
           setTimeout(() => {
             stopSample();
-            targetNote.textContent = "F";
             sampleStatus.textContent = "Nice. That is the opening Ode to Joy phrase.";
-          }, sampleNotes.length * stepSeconds * 1000 + 120),
+          }, totalPlaybackSeconds * 1000 + 140),
         );
       });
     </script>
