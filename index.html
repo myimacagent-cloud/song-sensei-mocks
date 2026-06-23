@@ -281,9 +281,9 @@
         box-shadow: 0 0 0 6px rgba(38, 110, 241, 0.12);
       }
 
-      .practice-panel[data-playing="true"] .scroll-staff .staff-track,
-      .practice-panel[data-playing="true"] .piano-roll-track {
-        animation: score-scroll var(--playback-duration, 6.9s) linear forwards;
+      .scroll-staff .staff-track,
+      .piano-roll-track {
+        will-change: transform;
       }
 
       .note {
@@ -667,16 +667,6 @@
 
       .practice-panel[data-playing="true"] .key.sample-active {
         animation: press-key 0.9s ease-in-out infinite;
-      }
-
-      @keyframes score-scroll {
-        from {
-          transform: translateX(0);
-        }
-
-        to {
-          transform: translateX(-700px);
-        }
       }
 
       @keyframes pulse-note {
@@ -1112,6 +1102,12 @@
       const sampleSteps = [...document.querySelectorAll(".sample-step")];
       const sampleStatus = document.querySelector(".sample-status");
       const targetNote = document.querySelector(".target-note");
+      const staff = document.querySelector(".scroll-staff");
+      const staffTrack = document.querySelector(".scroll-staff .staff-track");
+      const staffNotes = [...document.querySelectorAll(".scroll-staff .note[data-sample-index]")];
+      const pianoRoll = document.querySelector(".piano-roll");
+      const pianoRollTrack = document.querySelector(".piano-roll-track");
+      const rollNotes = [...document.querySelectorAll(".roll-note[data-sample-index]")];
       const sampleEvents = [
         { note: "E", beats: 1 },
         { note: "E", beats: 1 },
@@ -1144,6 +1140,8 @@
       };
       let audioContext;
       let sampleTimers = [];
+      let scrollFrame;
+      let playbackStartMs = 0;
 
       const viewCopy = {
         sheet: "Sheet view keeps the music staff big and focused.",
@@ -1166,13 +1164,60 @@
           .forEach((item) => item.classList.remove("sample-active"));
       }
 
+      function cueX(item, alignToCenter) {
+        return item.offsetLeft + (alignToCenter ? item.offsetWidth / 2 : 0);
+      }
+
+      function playheadX(container) {
+        return container.clientWidth * 0.45;
+      }
+
+      function setTrackToCue(track, container, cue) {
+        track.style.transform = `translateX(${playheadX(container) - cue}px)`;
+      }
+
+      function cueAtBeat(items, elapsedBeats, alignToCenter) {
+        let beatCursor = 0;
+
+        for (let index = 0; index < sampleEvents.length; index += 1) {
+          const event = sampleEvents[index];
+          const nextBeat = beatCursor + event.beats;
+          const currentCue = cueX(items[index], alignToCenter);
+          const nextCue = cueX(items[Math.min(index + 1, items.length - 1)], alignToCenter);
+
+          if (elapsedBeats <= nextBeat || index === sampleEvents.length - 1) {
+            const progress = event.beats ? Math.max(0, Math.min(1, (elapsedBeats - beatCursor) / event.beats)) : 0;
+            return currentCue + (nextCue - currentCue) * progress;
+          }
+
+          beatCursor = nextBeat;
+        }
+
+        return cueX(items[items.length - 1], alignToCenter);
+      }
+
+      function syncScrollToBeat(elapsedBeats) {
+        setTrackToCue(staffTrack, staff, cueAtBeat(staffNotes, elapsedBeats, true));
+        setTrackToCue(pianoRollTrack, pianoRoll, cueAtBeat(rollNotes, elapsedBeats, false));
+      }
+
+      function runSyncedScroll() {
+        if (practicePanel.dataset.playing !== "true") return;
+
+        const elapsedSeconds = Math.max(0, (performance.now() - playbackStartMs) / 1000);
+        syncScrollToBeat(Math.min(totalBeats, elapsedSeconds / beatSeconds));
+        scrollFrame = requestAnimationFrame(runSyncedScroll);
+      }
+
       function stopSample() {
         sampleTimers.forEach((timer) => clearTimeout(timer));
         sampleTimers = [];
+        cancelAnimationFrame(scrollFrame);
         clearSampleHighlights();
         practicePanel.dataset.playing = "false";
         playbackButton.textContent = "Play Ode to Joy sample";
         targetNote.textContent = "E";
+        syncScrollToBeat(0);
       }
 
       function playTone(note, startTime, duration) {
@@ -1212,19 +1257,23 @@
         stopSample();
         audioContext = audioContext || new AudioContext();
         audioContext.resume();
+        syncScrollToBeat(0);
         practicePanel.offsetWidth;
         practicePanel.dataset.playing = "true";
         playbackButton.textContent = "Pause sample";
         sampleStatus.textContent = "Sampling Ode to Joy...";
 
-        const startTime = audioContext.currentTime + 0.08;
+        const startDelaySeconds = 0.08;
+        const startTime = audioContext.currentTime + startDelaySeconds;
+        playbackStartMs = performance.now() + startDelaySeconds * 1000;
         let elapsedBeats = 0;
+        scrollFrame = requestAnimationFrame(runSyncedScroll);
 
         sampleEvents.forEach((event, index) => {
           const offsetSeconds = elapsedBeats * beatSeconds;
           const durationSeconds = event.beats * beatSeconds;
           playTone(event.note, startTime + offsetSeconds, durationSeconds * 0.88);
-          sampleTimers.push(setTimeout(() => highlightSampleStep(index), offsetSeconds * 1000));
+          sampleTimers.push(setTimeout(() => highlightSampleStep(index), (startDelaySeconds + offsetSeconds) * 1000));
           elapsedBeats += event.beats;
         });
 
@@ -1232,9 +1281,12 @@
           setTimeout(() => {
             stopSample();
             sampleStatus.textContent = "Nice. That is the opening Ode to Joy phrase.";
-          }, totalPlaybackSeconds * 1000 + 140),
+          }, (startDelaySeconds + totalPlaybackSeconds) * 1000 + 140),
         );
       });
+
+      syncScrollToBeat(0);
+      window.addEventListener("resize", () => syncScrollToBeat(0));
     </script>
   </body>
 </html>
