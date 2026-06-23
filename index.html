@@ -251,6 +251,7 @@
 
       .staff {
         position: relative;
+        contain: paint;
         height: 160px;
         margin: 18px 0;
         overflow: hidden;
@@ -518,6 +519,118 @@
         cursor: pointer;
       }
 
+      .part-selector {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+
+      .part-button {
+        display: grid;
+        gap: 5px;
+        min-height: 78px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 11px;
+        color: var(--ink);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .part-button strong {
+        font-size: 14px;
+      }
+
+      .part-button.selected {
+        border-color: var(--blue);
+        background: #edf4ff;
+        box-shadow: inset 0 0 0 1px var(--blue);
+      }
+
+      .mode-switch {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        border-radius: 8px;
+        background: #eef3f9;
+        padding: 6px;
+      }
+
+      .mode-switch button {
+        min-height: 38px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-weight: 740;
+        cursor: pointer;
+      }
+
+      .mode-switch .selected {
+        background: #fff;
+        color: var(--blue);
+        box-shadow: inset 0 0 0 1px #cbd8e6;
+      }
+
+      .band-board {
+        display: grid;
+        gap: 8px;
+      }
+
+      .band-lane {
+        display: grid;
+        grid-template-columns: 92px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px;
+      }
+
+      .band-lane[data-focus="true"] {
+        border-color: var(--blue);
+        background: #edf4ff;
+      }
+
+      .band-lane[data-muted="true"] {
+        opacity: 0.46;
+      }
+
+      .lane-notes {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 6px;
+      }
+
+      .lane-note {
+        height: 18px;
+        border-radius: 999px;
+        background: #d7e0e9;
+      }
+
+      .band-lane[data-focus="true"] .lane-note {
+        background: var(--blue);
+      }
+
+      .band-lane[data-part="drums"] .lane-note {
+        height: 12px;
+        background: #f2d28e;
+      }
+
+      .band-lane[data-focus="true"][data-part="drums"] .lane-note {
+        background: var(--gold);
+      }
+
+      .part-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
       .view-toggle .selected {
         background: #fff;
         color: var(--blue);
@@ -532,6 +645,7 @@
 
       .piano-roll {
         position: relative;
+        contain: paint;
         overflow: hidden;
         height: 198px;
         border: 1px solid var(--line);
@@ -683,6 +797,15 @@
       }
 
       @media (max-width: 980px) {
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .nav {
+          flex-wrap: wrap;
+        }
+
         .mock-grid {
           grid-template-columns: 1fr;
         }
@@ -694,7 +817,13 @@
         .option-grid,
         .form-grid,
         .save-flow,
+        .part-selector,
+        .part-summary,
         .sample-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .band-lane {
           grid-template-columns: 1fr;
         }
       }
@@ -713,8 +842,8 @@
       </div>
       <h1>Learning App UX Directions</h1>
       <p class="intro">
-        Five early screens for a kid-friendly practice flow: choose, learn,
-        listen, celebrate.
+        Six early screens for a kid-friendly practice flow: choose, learn,
+        play your part, listen, celebrate.
       </p>
 
       <section class="mock-grid">
@@ -917,7 +1046,109 @@
 
         <article class="mock">
           <div class="mock-head">
-            <div class="mock-title">3. Lesson Builder</div>
+            <div class="mock-title">3. Instrument Parts / Band Practice</div>
+            <div class="device">Practice Mode</div>
+          </div>
+          <div class="screen stack part-panel" data-selected-part="piano" data-part-mode="band">
+            <div class="row">
+              <div>
+                <div class="label">Ode to Joy / Part selector</div>
+                <div class="big">Learn your part or play with the band</div>
+              </div>
+              <span class="button">Start part</span>
+            </div>
+            <div class="part-selector" aria-label="Choose an instrument part">
+              <button class="part-button selected" type="button" data-part-option="piano">
+                <strong>Piano</strong>
+                <span class="label">Melody + simple chords</span>
+              </button>
+              <button class="part-button" type="button" data-part-option="violin">
+                <strong>Violin</strong>
+                <span class="label">Main melody line</span>
+              </button>
+              <button class="part-button" type="button" data-part-option="guitar">
+                <strong>Guitar</strong>
+                <span class="label">Chord strums</span>
+              </button>
+              <button class="part-button" type="button" data-part-option="drums">
+                <strong>Drums</strong>
+                <span class="label">Steady beat pattern</span>
+              </button>
+            </div>
+            <div class="mode-switch" aria-label="Choose practice mode">
+              <button type="button" data-part-mode-option="solo">Solo</button>
+              <button class="selected" type="button" data-part-mode-option="band">With Band</button>
+            </div>
+            <div class="split">
+              <div class="panel stack">
+                <div class="row">
+                  <div>
+                    <strong class="part-title">Piano part</strong>
+                    <div class="label part-mode-copy">Your piano notes are bright. Other instruments play softer behind you.</div>
+                  </div>
+                  <span class="chip selected part-mode-chip">With Band</span>
+                </div>
+                <div class="band-board">
+                  <div class="band-lane" data-part="piano" data-focus="true">
+                    <strong>Piano</strong>
+                    <div class="lane-notes">
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                    </div>
+                    <span class="label">Learning</span>
+                  </div>
+                  <div class="band-lane" data-part="violin">
+                    <strong>Violin</strong>
+                    <div class="lane-notes">
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                    </div>
+                    <span class="label">Backing</span>
+                  </div>
+                  <div class="band-lane" data-part="guitar">
+                    <strong>Guitar</strong>
+                    <div class="lane-notes">
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                    </div>
+                    <span class="label">Backing</span>
+                  </div>
+                  <div class="band-lane" data-part="drums">
+                    <strong>Drums</strong>
+                    <div class="lane-notes">
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                    </div>
+                    <span class="label">Backing</span>
+                  </div>
+                </div>
+              </div>
+              <div class="panel soft stack">
+                <span class="label">Part controls</span>
+                <div class="part-summary">
+                  <div class="stat">
+                    <div class="label">Visible notes</div>
+                    <div class="big part-visible-count">Piano only</div>
+                  </div>
+                  <div class="stat">
+                    <div class="label">Backing sound</div>
+                    <div class="big part-backing-count">3 parts</div>
+                  </div>
+                </div>
+                <div class="lesson-list">
+                  <div class="lesson"><span class="badge now">1</span><span>Learn the selected part</span><span class="label">Bright lane</span></div>
+                  <div class="lesson"><span class="badge">2</span><span>Keep the beat with backing parts</span><span class="label">Dim lanes</span></div>
+                  <div class="lesson"><span class="badge">3</span><span>Record with microphone check</span><span class="label">Later</span></div>
+                </div>
+                <div class="callout">Song data is stored by part, so Song Sensei can show only your instrument while the rest of the band keeps playing.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="mock">
+          <div class="mock-head">
+            <div class="mock-title">4. Lesson Builder</div>
             <div class="device">Parent / Teacher</div>
           </div>
           <div class="screen stack">
@@ -968,7 +1199,7 @@
 
         <article class="mock">
           <div class="mock-head">
-            <div class="mock-title">4. Progress / Celebration</div>
+            <div class="mock-title">5. Progress / Celebration</div>
             <div class="device">Kid View</div>
           </div>
           <div class="screen stack">
@@ -1011,7 +1242,7 @@
 
         <article class="mock">
           <div class="mock-head">
-            <div class="mock-title">5. Add Song to Library</div>
+            <div class="mock-title">6. Add Song to Library</div>
             <div class="device">Creator Flow</div>
           </div>
           <div class="screen stack">
@@ -1108,6 +1339,15 @@
       const pianoRoll = document.querySelector(".piano-roll");
       const pianoRollTrack = document.querySelector(".piano-roll-track");
       const rollNotes = [...document.querySelectorAll(".roll-note[data-sample-index]")];
+      const partPanel = document.querySelector(".part-panel");
+      const partButtons = [...document.querySelectorAll("[data-part-option]")];
+      const partModeButtons = [...document.querySelectorAll("[data-part-mode-option]")];
+      const partTitle = document.querySelector(".part-title");
+      const partModeCopy = document.querySelector(".part-mode-copy");
+      const partModeChip = document.querySelector(".part-mode-chip");
+      const partVisibleCount = document.querySelector(".part-visible-count");
+      const partBackingCount = document.querySelector(".part-backing-count");
+      const bandLanes = [...document.querySelectorAll(".band-lane")];
       const sampleEvents = [
         { note: "E", beats: 1 },
         { note: "E", beats: 1 },
@@ -1148,6 +1388,24 @@
         piano: "Piano Notes shows the moving notes and the key to press.",
         split: "Split View shows the sheet and piano playback together.",
       };
+      const partCopy = {
+        piano: {
+          title: "Piano part",
+          detail: "Melody plus simple chords for a beginner piano player.",
+        },
+        violin: {
+          title: "Violin part",
+          detail: "Main melody line, shown as the part to learn.",
+        },
+        guitar: {
+          title: "Guitar part",
+          detail: "Chord strums that support the melody.",
+        },
+        drums: {
+          title: "Drum part",
+          detail: "A steady beat pattern for keeping time.",
+        },
+      };
 
       modeButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -1155,6 +1413,49 @@
           practicePanel.dataset.view = view;
           modeHint.textContent = viewCopy[view];
           modeButtons.forEach((item) => item.classList.toggle("selected", item === button));
+        });
+      });
+
+      function updatePartPanel() {
+        const selectedPart = partPanel.dataset.selectedPart;
+        const selectedMode = partPanel.dataset.partMode;
+        const backingCount = selectedMode === "solo" ? 0 : bandLanes.length - 1;
+        const selectedLabel = partCopy[selectedPart].title.replace(" part", "");
+
+        partButtons.forEach((button) => {
+          button.classList.toggle("selected", button.dataset.partOption === selectedPart);
+        });
+        partModeButtons.forEach((button) => {
+          button.classList.toggle("selected", button.dataset.partModeOption === selectedMode);
+        });
+        bandLanes.forEach((lane) => {
+          const isFocus = lane.dataset.part === selectedPart;
+          lane.dataset.focus = isFocus ? "true" : "false";
+          lane.dataset.muted = selectedMode === "solo" && !isFocus ? "true" : "false";
+          lane.querySelector(".label").textContent = isFocus ? "Learning" : selectedMode === "solo" ? "Muted" : "Backing";
+        });
+
+        partTitle.textContent = partCopy[selectedPart].title;
+        partModeChip.textContent = selectedMode === "solo" ? "Solo" : "With Band";
+        partVisibleCount.textContent = `${selectedLabel} only`;
+        partBackingCount.textContent = selectedMode === "solo" ? "Muted" : `${backingCount} parts`;
+        partModeCopy.textContent =
+          selectedMode === "solo"
+            ? `${partCopy[selectedPart].detail} Other instruments are muted so the learner can focus.`
+            : `${partCopy[selectedPart].detail} Other instruments play softer behind the learner.`;
+      }
+
+      partButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          partPanel.dataset.selectedPart = button.dataset.partOption;
+          updatePartPanel();
+        });
+      });
+
+      partModeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          partPanel.dataset.partMode = button.dataset.partModeOption;
+          updatePartPanel();
         });
       });
 
@@ -1286,6 +1587,7 @@
       });
 
       syncScrollToBeat(0);
+      updatePartPanel();
       window.addEventListener("resize", () => syncScrollToBeat(0));
     </script>
   </body>
