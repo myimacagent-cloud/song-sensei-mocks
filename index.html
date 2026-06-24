@@ -337,8 +337,7 @@
         width: 2px;
         height: 54px;
         border-radius: 999px;
-        background: currentColor;
-        color: inherit;
+        background: var(--ink);
         transform: rotate(18deg);
         transform-origin: bottom;
       }
@@ -358,6 +357,10 @@
       .scroll-staff .note.sample-active {
         background: var(--blue);
         box-shadow: 0 0 0 8px rgba(38, 110, 241, 0.16);
+      }
+
+      .scroll-staff .note.sample-active::after {
+        background: var(--blue);
       }
 
       .scroll-staff .note.half.sample-active {
@@ -2034,6 +2037,11 @@
         track.style.transform = `translateX(${playheadX(container) - cue}px)`;
       }
 
+      function resetTracksToStart() {
+        staffTrack.style.transform = "translateX(0)";
+        pianoRollTrack.style.transform = "translateX(0)";
+      }
+
       function cueAtBeat(items, elapsedBeats, alignToCenter) {
         let beatCursor = 0;
 
@@ -2076,7 +2084,7 @@
         playbackButton.textContent = "Play Ode to Joy sample";
         targetNote.textContent = "E";
         updateInstrumentGuide("E", 0);
-        syncScrollToBeat(0);
+        resetTracksToStart();
       }
 
       function playTone(note, startTime, duration) {
@@ -2145,10 +2153,18 @@
         );
       });
 
-      syncScrollToBeat(0);
+      resetTracksToStart();
       updatePartPanel();
       updateInstrumentGuide("E", 0);
-      window.addEventListener("resize", () => syncScrollToBeat(0));
+      window.addEventListener("resize", () => {
+        if (practicePanel.dataset.playing === "true") {
+          const elapsedSeconds = Math.max(0, (performance.now() - playbackStartMs) / 1000);
+          syncScrollToBeat(Math.min(totalBeats, elapsedSeconds / beatSeconds));
+          return;
+        }
+
+        resetTracksToStart();
+      });
     </script>
   </body>
 </html>
