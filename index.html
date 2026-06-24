@@ -213,6 +213,12 @@
         font-weight: 720;
       }
 
+      .instrument-chip {
+        background: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+
       .song-card {
         display: grid;
         grid-template-columns: 48px 1fr auto;
@@ -521,7 +527,7 @@
 
       .part-selector {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 8px;
       }
 
@@ -629,6 +635,109 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
+      }
+
+      .instrument-guide {
+        display: none;
+        gap: 12px;
+      }
+
+      .practice-panel[data-instrument="piano"] .instrument-guide[data-guide="piano"],
+      .practice-panel[data-instrument="violin"] .instrument-guide[data-guide="strings"],
+      .practice-panel[data-instrument="viola"] .instrument-guide[data-guide="strings"],
+      .practice-panel[data-instrument="cello"] .instrument-guide[data-guide="strings"],
+      .practice-panel[data-instrument="guitar"] .instrument-guide[data-guide="guitar"],
+      .practice-panel[data-instrument="drums"] .instrument-guide[data-guide="drums"] {
+        display: grid;
+      }
+
+      .fingerboard {
+        position: relative;
+        min-height: 196px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, rgba(23, 33, 43, 0.09) 1px, transparent 1px)
+            88px 0 / 72px 100%,
+          #fbfcfe;
+        overflow: hidden;
+      }
+
+      .fingerboard.string-family {
+        background: #fbfcfe;
+      }
+
+      .string-line {
+        position: absolute;
+        right: 18px;
+        left: 18px;
+        height: 2px;
+        border-radius: 999px;
+        background: #a9b5c2;
+      }
+
+      .string-name {
+        position: absolute;
+        left: 12px;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .finger-dot {
+        position: absolute;
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        transform: translate(-50%, -50%);
+        border: 2px solid #fff;
+        border-radius: 50%;
+        background: #dce5ee;
+        color: var(--muted);
+        font-weight: 850;
+        box-shadow: 0 7px 18px rgba(23, 33, 43, 0.12);
+      }
+
+      .finger-dot.sample-active {
+        background: var(--blue);
+        color: #fff;
+        box-shadow: 0 0 0 8px rgba(38, 110, 241, 0.16);
+      }
+
+      .guide-cue {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .guide-cue .stat {
+        min-height: 72px;
+      }
+
+      .drum-pad-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .drum-pad {
+        display: grid;
+        min-height: 82px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 850;
+      }
+
+      .drum-pad.sample-active {
+        border-color: var(--gold);
+        background: #fff4d8;
+        color: #7c5600;
+        box-shadow: 0 0 0 7px rgba(242, 184, 75, 0.17);
       }
 
       .view-toggle .selected {
@@ -872,10 +981,12 @@
               <div class="panel stack">
                 <span class="label">Instrument</span>
                 <div class="chips">
-                  <span class="chip selected">Piano</span>
-                  <span class="chip">Guitar</span>
-                  <span class="chip">Voice</span>
-                  <span class="chip">Drums</span>
+                  <button class="chip selected instrument-chip" type="button" data-home-instrument="piano">Piano</button>
+                  <button class="chip instrument-chip" type="button" data-home-instrument="violin">Violin</button>
+                  <button class="chip instrument-chip" type="button" data-home-instrument="guitar">Guitar</button>
+                  <button class="chip instrument-chip" type="button" data-home-instrument="viola">Viola</button>
+                  <button class="chip instrument-chip" type="button" data-home-instrument="cello">Cello</button>
+                  <button class="chip instrument-chip" type="button" data-home-instrument="drums">Drums</button>
                 </div>
                 <span class="label">Difficulty</span>
                 <div class="chips">
@@ -926,11 +1037,11 @@
             <div class="mock-title">2. Guided Practice / View Modes</div>
             <div class="device">Desktop</div>
           </div>
-          <div class="screen stack practice-panel" data-view="split" data-playing="false">
+          <div class="screen stack practice-panel" data-view="split" data-playing="false" data-instrument="piano">
             <div class="row">
               <div>
-                <div class="label">Ode to Joy / Phrase 2</div>
-                <div class="big">Read it your way</div>
+                <div class="label guided-context">Ode to Joy / Piano / Phrase 2</div>
+                <div class="big guided-title">Read it your way</div>
               </div>
               <button class="button ghost playback-button" type="button">Play Ode to Joy sample</button>
             </div>
@@ -954,7 +1065,7 @@
             <div class="sample-status">Ready to sample Ode to Joy.</div>
             <div class="view-toggle">
               <button type="button" data-view-option="sheet">Sheet</button>
-              <button type="button" data-view-option="piano">Piano Notes</button>
+              <button type="button" data-view-option="piano">Instrument Guide</button>
               <button class="selected" type="button" data-view-option="split">Split View</button>
             </div>
             <div class="mode-hint">Split View shows the sheet and piano playback together.</div>
@@ -987,45 +1098,90 @@
               </div>
               <div class="panel stack piano-view">
                 <div class="row">
-                  <strong>Piano note view</strong>
-                  <span class="label">Playback on</span>
+                  <strong class="guide-title">Piano note view</strong>
+                  <span class="label guide-mode-label">Keys + notes</span>
                 </div>
-                <div class="piano-roll">
-                  <span class="playhead"></span>
-                  <div class="piano-roll-track">
-                    <span class="roll-note" data-sample-index="0" style="left: 54px; top: 96px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="1" style="left: 118px; top: 96px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="2" style="left: 182px; top: 72px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="3" style="left: 246px; top: 48px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="4" style="left: 310px; top: 48px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="5" style="left: 374px; top: 72px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="6" style="left: 438px; top: 96px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="7" style="left: 502px; top: 120px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="8" style="left: 566px; top: 144px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="9" style="left: 630px; top: 144px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="10" style="left: 694px; top: 120px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="11" style="left: 758px; top: 96px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="12" style="left: 822px; top: 96px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="13" style="left: 886px; top: 120px; width: 54px"></span>
-                    <span class="roll-note" data-sample-index="14" style="left: 950px; top: 120px; width: 108px"></span>
+                <div class="instrument-guide" data-guide="piano">
+                  <div class="piano-roll">
+                    <span class="playhead"></span>
+                    <div class="piano-roll-track">
+                      <span class="roll-note" data-sample-index="0" style="left: 54px; top: 96px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="1" style="left: 118px; top: 96px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="2" style="left: 182px; top: 72px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="3" style="left: 246px; top: 48px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="4" style="left: 310px; top: 48px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="5" style="left: 374px; top: 72px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="6" style="left: 438px; top: 96px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="7" style="left: 502px; top: 120px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="8" style="left: 566px; top: 144px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="9" style="left: 630px; top: 144px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="10" style="left: 694px; top: 120px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="11" style="left: 758px; top: 96px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="12" style="left: 822px; top: 96px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="13" style="left: 886px; top: 120px; width: 54px"></span>
+                      <span class="roll-note" data-sample-index="14" style="left: 950px; top: 120px; width: 108px"></span>
+                    </div>
+                  </div>
+                  <div class="keyboard">
+                    <span class="key" data-key-note="C">C</span>
+                    <span class="key" data-key-note="D">D</span>
+                    <span class="key" data-key-note="E">E</span>
+                    <span class="key" data-key-note="F">F</span>
+                    <span class="key" data-key-note="G">G</span>
+                    <span class="key" data-key-note="A">A</span>
+                    <span class="key" data-key-note="B">B</span>
+                    <span class="key">C</span>
+                    <span class="key">D</span>
+                    <span class="black-key" style="left: 7.5%"></span>
+                    <span class="black-key" style="left: 18.6%"></span>
+                    <span class="black-key" style="left: 40.9%"></span>
+                    <span class="black-key" style="left: 52%"></span>
+                    <span class="black-key" style="left: 63.1%"></span>
+                    <span class="black-key" style="left: 85.3%"></span>
                   </div>
                 </div>
-                <div class="keyboard">
-                  <span class="key" data-key-note="C">C</span>
-                  <span class="key" data-key-note="D">D</span>
-                  <span class="key" data-key-note="E">E</span>
-                  <span class="key" data-key-note="F">F</span>
-                  <span class="key" data-key-note="G">G</span>
-                  <span class="key" data-key-note="A">A</span>
-                  <span class="key" data-key-note="B">B</span>
-                  <span class="key">C</span>
-                  <span class="key">D</span>
-                  <span class="black-key" style="left: 7.5%"></span>
-                  <span class="black-key" style="left: 18.6%"></span>
-                  <span class="black-key" style="left: 40.9%"></span>
-                  <span class="black-key" style="left: 52%"></span>
-                  <span class="black-key" style="left: 63.1%"></span>
-                  <span class="black-key" style="left: 85.3%"></span>
+                <div class="instrument-guide" data-guide="strings">
+                  <div class="fingerboard string-family" aria-label="String instrument fingerboard">
+                    <span class="string-line" style="top: 22%"></span><span class="string-name" style="top: 22%">E</span>
+                    <span class="string-line" style="top: 42%"></span><span class="string-name" style="top: 42%">A</span>
+                    <span class="string-line" style="top: 62%"></span><span class="string-name" style="top: 62%">D</span>
+                    <span class="string-line" style="top: 82%"></span><span class="string-name" style="top: 82%">G</span>
+                    <span class="finger-dot" data-string-finger style="left: 58%; top: 62%">1</span>
+                  </div>
+                  <div class="guide-cue">
+                    <div class="stat"><div class="label">String</div><div class="big string-cue">D</div></div>
+                    <div class="stat"><div class="label">Finger</div><div class="big finger-cue">1</div></div>
+                    <div class="stat"><div class="label">Hand</div><div class="big hand-cue">Low</div></div>
+                  </div>
+                </div>
+                <div class="instrument-guide" data-guide="guitar">
+                  <div class="fingerboard" aria-label="Guitar fretboard">
+                    <span class="string-line" style="top: 16%"></span><span class="string-name" style="top: 16%">E</span>
+                    <span class="string-line" style="top: 30%"></span><span class="string-name" style="top: 30%">B</span>
+                    <span class="string-line" style="top: 44%"></span><span class="string-name" style="top: 44%">G</span>
+                    <span class="string-line" style="top: 58%"></span><span class="string-name" style="top: 58%">D</span>
+                    <span class="string-line" style="top: 72%"></span><span class="string-name" style="top: 72%">A</span>
+                    <span class="string-line" style="top: 86%"></span><span class="string-name" style="top: 86%">E</span>
+                    <span class="finger-dot" data-guitar-finger style="left: 58%; top: 72%">3</span>
+                  </div>
+                  <div class="guide-cue">
+                    <div class="stat"><div class="label">String</div><div class="big guitar-string-cue">A</div></div>
+                    <div class="stat"><div class="label">Fret</div><div class="big fret-cue">3</div></div>
+                    <div class="stat"><div class="label">Finger</div><div class="big guitar-finger-cue">3</div></div>
+                  </div>
+                </div>
+                <div class="instrument-guide" data-guide="drums">
+                  <div class="drum-pad-grid">
+                    <span class="drum-pad" data-drum-pad="kick">Kick</span>
+                    <span class="drum-pad" data-drum-pad="snare">Snare</span>
+                    <span class="drum-pad" data-drum-pad="hat">Hi-hat</span>
+                    <span class="drum-pad" data-drum-pad="tom">Tom</span>
+                  </div>
+                  <div class="guide-cue">
+                    <div class="stat"><div class="label">Hit</div><div class="big drum-hit-cue">Hat</div></div>
+                    <div class="stat"><div class="label">Hand</div><div class="big drum-hand-cue">Right</div></div>
+                    <div class="stat"><div class="label">Count</div><div class="big drum-count-cue">1</div></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1077,6 +1233,14 @@
                 <strong>Guitar</strong>
                 <span class="label">Chord strums</span>
               </button>
+              <button class="part-button" type="button" data-part-option="viola">
+                <strong>Viola</strong>
+                <span class="label">Warm string line</span>
+              </button>
+              <button class="part-button" type="button" data-part-option="cello">
+                <strong>Cello</strong>
+                <span class="label">Low support line</span>
+              </button>
               <button class="part-button" type="button" data-part-option="drums">
                 <strong>Drums</strong>
                 <span class="label">Steady beat pattern</span>
@@ -1114,6 +1278,22 @@
                   </div>
                   <div class="band-lane" data-part="guitar">
                     <strong>Guitar</strong>
+                    <div class="lane-notes">
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                    </div>
+                    <span class="label">Backing</span>
+                  </div>
+                  <div class="band-lane" data-part="viola">
+                    <strong>Viola</strong>
+                    <div class="lane-notes">
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                      <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
+                    </div>
+                    <span class="label">Backing</span>
+                  </div>
+                  <div class="band-lane" data-part="cello">
+                    <strong>Cello</strong>
                     <div class="lane-notes">
                       <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
                       <span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span><span class="lane-note"></span>
@@ -1334,6 +1514,9 @@
     </main>
     <script>
       const practicePanel = document.querySelector(".practice-panel");
+      const homeInstrumentButtons = [...document.querySelectorAll("[data-home-instrument]")];
+      const guidedContext = document.querySelector(".guided-context");
+      const guidedTitle = document.querySelector(".guided-title");
       const modeButtons = [...document.querySelectorAll("[data-view-option]")];
       const modeHint = document.querySelector(".mode-hint");
       const playbackButton = document.querySelector(".playback-button");
@@ -1346,6 +1529,21 @@
       const pianoRoll = document.querySelector(".piano-roll");
       const pianoRollTrack = document.querySelector(".piano-roll-track");
       const rollNotes = [...document.querySelectorAll(".roll-note[data-sample-index]")];
+      const guideTitle = document.querySelector(".guide-title");
+      const guideModeLabel = document.querySelector(".guide-mode-label");
+      const stringNames = [...document.querySelectorAll('[data-guide="strings"] .string-name')];
+      const stringFinger = document.querySelector("[data-string-finger]");
+      const stringCue = document.querySelector(".string-cue");
+      const fingerCue = document.querySelector(".finger-cue");
+      const handCue = document.querySelector(".hand-cue");
+      const guitarFinger = document.querySelector("[data-guitar-finger]");
+      const guitarStringCue = document.querySelector(".guitar-string-cue");
+      const fretCue = document.querySelector(".fret-cue");
+      const guitarFingerCue = document.querySelector(".guitar-finger-cue");
+      const drumPads = [...document.querySelectorAll("[data-drum-pad]")];
+      const drumHitCue = document.querySelector(".drum-hit-cue");
+      const drumHandCue = document.querySelector(".drum-hand-cue");
+      const drumCountCue = document.querySelector(".drum-count-cue");
       const partPanel = document.querySelector(".part-panel");
       const partButtons = [...document.querySelectorAll("[data-part-option]")];
       const partModeButtons = [...document.querySelectorAll("[data-part-mode-option]")];
@@ -1392,8 +1590,55 @@
 
       const viewCopy = {
         sheet: "Sheet view keeps the music staff big and focused.",
-        piano: "Piano Notes shows the moving notes and the key to press.",
-        split: "Split View shows the sheet and piano playback together.",
+        piano: "Instrument Guide shows the hand placement or pad to use.",
+        split: "Split View shows the sheet and instrument guide together.",
+      };
+      const instrumentCopy = {
+        piano: {
+          label: "Piano",
+          title: "Read it your way",
+          guideTitle: "Piano note view",
+          guideMode: "Keys + notes",
+          prompt: "Play each note as the blue line passes it",
+        },
+        violin: {
+          label: "Violin",
+          title: "Follow the finger placement",
+          guideTitle: "Violin hand-placement view",
+          guideMode: "String + finger",
+          prompt: "Place the finger shown, then bow the highlighted note",
+          strings: ["E", "A", "D", "G"],
+        },
+        viola: {
+          label: "Viola",
+          title: "Follow the finger placement",
+          guideTitle: "Viola hand-placement view",
+          guideMode: "String + finger",
+          prompt: "Use the viola string and finger cue as the note arrives",
+          strings: ["A", "D", "G", "C"],
+        },
+        cello: {
+          label: "Cello",
+          title: "Follow the finger placement",
+          guideTitle: "Cello hand-placement view",
+          guideMode: "String + finger",
+          prompt: "Match the cello string and hand position in time",
+          strings: ["A", "D", "G", "C"],
+        },
+        guitar: {
+          label: "Guitar",
+          title: "Follow the fretboard",
+          guideTitle: "Guitar fretboard view",
+          guideMode: "String + fret",
+          prompt: "Press the shown fret as the note arrives",
+        },
+        drums: {
+          label: "Drums",
+          title: "Follow the hit pattern",
+          guideTitle: "Drum pad view",
+          guideMode: "Pad + sticking",
+          prompt: "Hit the highlighted pad on the count",
+        },
       };
       const partCopy = {
         piano: {
@@ -1408,11 +1653,134 @@
           title: "Guitar part",
           detail: "Chord strums that support the melody.",
         },
+        viola: {
+          title: "Viola part",
+          detail: "A warm inner string line with finger placement cues.",
+        },
+        cello: {
+          title: "Cello part",
+          detail: "A lower support line with big string-position cues.",
+        },
         drums: {
           title: "Drum part",
           detail: "A steady beat pattern for keeping time.",
         },
       };
+      const stringNoteMaps = {
+        violin: {
+          C: { string: "G", finger: "3", hand: "Low", x: 70, y: 82 },
+          D: { string: "D", finger: "0", hand: "Open", x: 28, y: 62 },
+          E: { string: "D", finger: "1", hand: "Low", x: 48, y: 62 },
+          F: { string: "D", finger: "2", hand: "Low", x: 58, y: 62 },
+          G: { string: "D", finger: "3", hand: "Low", x: 70, y: 62 },
+        },
+        viola: {
+          C: { string: "C", finger: "0", hand: "Open", x: 28, y: 82 },
+          D: { string: "D", finger: "0", hand: "Open", x: 28, y: 42 },
+          E: { string: "D", finger: "1", hand: "Low", x: 48, y: 42 },
+          F: { string: "D", finger: "2", hand: "Low", x: 58, y: 42 },
+          G: { string: "G", finger: "0", hand: "Open", x: 28, y: 62 },
+        },
+        cello: {
+          C: { string: "C", finger: "0", hand: "Open", x: 28, y: 82 },
+          D: { string: "D", finger: "0", hand: "Open", x: 28, y: 42 },
+          E: { string: "D", finger: "1", hand: "First", x: 48, y: 42 },
+          F: { string: "D", finger: "2", hand: "First", x: 58, y: 42 },
+          G: { string: "G", finger: "0", hand: "Open", x: 28, y: 62 },
+        },
+      };
+      const guitarNoteMap = {
+        C: { string: "A", fret: "3", finger: "3", x: 53, y: 72 },
+        D: { string: "D", fret: "0", finger: "0", x: 26, y: 58 },
+        E: { string: "E", fret: "0", finger: "0", x: 26, y: 86 },
+        F: { string: "E", fret: "1", finger: "1", x: 39, y: 86 },
+        G: { string: "E", fret: "3", finger: "3", x: 53, y: 86 },
+      };
+      const drumNoteMap = {
+        C: { pad: "kick", hit: "Kick", hand: "Foot" },
+        D: { pad: "snare", hit: "Snare", hand: "Left" },
+        E: { pad: "hat", hit: "Hi-hat", hand: "Right" },
+        F: { pad: "tom", hit: "Tom", hand: "Right" },
+        G: { pad: "hat", hit: "Hi-hat", hand: "Right" },
+      };
+
+      function stringTopFor(instrument, stringName) {
+        const strings = instrumentCopy[instrument].strings || instrumentCopy.violin.strings;
+        const index = strings.indexOf(stringName);
+        return [22, 42, 62, 82][Math.max(0, index)];
+      }
+
+      function updateStringGuide(note) {
+        const instrument = practicePanel.dataset.instrument;
+        const strings = instrumentCopy[instrument].strings || instrumentCopy.violin.strings;
+        const cue = stringNoteMaps[instrument]?.[note] || stringNoteMaps.violin[note];
+
+        stringNames.forEach((item, index) => {
+          item.textContent = strings[index];
+        });
+        stringFinger.textContent = cue.finger;
+        stringFinger.style.left = `${cue.x}%`;
+        stringFinger.style.top = `${stringTopFor(instrument, cue.string)}%`;
+        stringCue.textContent = cue.string;
+        fingerCue.textContent = cue.finger === "0" ? "Open" : cue.finger;
+        handCue.textContent = cue.hand;
+      }
+
+      function updateGuitarGuide(note) {
+        const cue = guitarNoteMap[note];
+
+        guitarFinger.textContent = cue.finger;
+        guitarFinger.style.left = `${cue.x}%`;
+        guitarFinger.style.top = `${cue.y}%`;
+        guitarStringCue.textContent = cue.string;
+        fretCue.textContent = cue.fret === "0" ? "Open" : cue.fret;
+        guitarFingerCue.textContent = cue.finger === "0" ? "Open" : cue.finger;
+      }
+
+      function updateDrumGuide(note, index = 0) {
+        const cue = drumNoteMap[note];
+
+        drumPads.forEach((pad) => pad.classList.toggle("sample-active", pad.dataset.drumPad === cue.pad));
+        drumHitCue.textContent = cue.hit;
+        drumHandCue.textContent = cue.hand;
+        drumCountCue.textContent = `${(index % 4) + 1}`;
+      }
+
+      function updateInstrumentGuide(note = targetNote.textContent, index = 0) {
+        const selectedInstrument = practicePanel.dataset.instrument;
+        const copy = instrumentCopy[selectedInstrument];
+
+        guidedContext.textContent = `Ode to Joy / ${copy.label} / Phrase 2`;
+        guidedTitle.textContent = copy.title;
+        guideTitle.textContent = copy.guideTitle;
+        guideModeLabel.textContent = copy.guideMode;
+        document.querySelector(".feedback .panel .big").textContent = copy.prompt;
+        homeInstrumentButtons.forEach((button) => {
+          button.classList.toggle("selected", button.dataset.homeInstrument === selectedInstrument);
+        });
+
+        if (selectedInstrument === "guitar") updateGuitarGuide(note);
+        if (["violin", "viola", "cello"].includes(selectedInstrument)) updateStringGuide(note);
+        if (selectedInstrument === "drums") updateDrumGuide(note, index);
+        stringFinger.classList.toggle("sample-active", ["violin", "viola", "cello"].includes(selectedInstrument));
+        guitarFinger.classList.toggle("sample-active", selectedInstrument === "guitar");
+        if (selectedInstrument !== "drums") {
+          drumPads.forEach((pad) => pad.classList.remove("sample-active"));
+        }
+      }
+
+      function selectInstrument(instrument) {
+        practicePanel.dataset.instrument = instrument;
+        if (partCopy[instrument]) {
+          partPanel.dataset.selectedPart = instrument;
+          updatePartPanel();
+        }
+        updateInstrumentGuide(targetNote.textContent);
+      }
+
+      homeInstrumentButtons.forEach((button) => {
+        button.addEventListener("click", () => selectInstrument(button.dataset.homeInstrument));
+      });
 
       modeButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -1454,8 +1822,7 @@
 
       partButtons.forEach((button) => {
         button.addEventListener("click", () => {
-          partPanel.dataset.selectedPart = button.dataset.partOption;
-          updatePartPanel();
+          selectInstrument(button.dataset.partOption);
         });
       });
 
@@ -1525,6 +1892,7 @@
         practicePanel.dataset.playing = "false";
         playbackButton.textContent = "Play Ode to Joy sample";
         targetNote.textContent = "E";
+        updateInstrumentGuide("E", 0);
         syncScrollToBeat(0);
       }
 
@@ -1546,6 +1914,7 @@
         const event = sampleEvents[index];
         clearSampleHighlights();
         targetNote.textContent = event.note;
+        updateInstrumentGuide(event.note, index);
         sampleStatus.textContent = `Now playing ${event.note}`;
         sampleSteps[index].classList.add("sample-active");
         document
@@ -1595,6 +1964,7 @@
 
       syncScrollToBeat(0);
       updatePartPanel();
+      updateInstrumentGuide("E", 0);
       window.addEventListener("resize", () => syncScrollToBeat(0));
     </script>
   </body>
