@@ -258,7 +258,7 @@
       .staff {
         position: relative;
         contain: paint;
-        height: 160px;
+        height: 190px;
         margin: 18px 0;
         overflow: hidden;
         border-radius: 8px;
@@ -274,7 +274,7 @@
       }
 
       .scroll-staff .staff-track {
-        width: 1080px;
+        width: 1120px;
       }
 
       .staff-playhead {
@@ -318,6 +318,163 @@
       .note.sample-active {
         background: var(--blue);
         box-shadow: 0 0 0 8px rgba(38, 110, 241, 0.18);
+      }
+
+      .scroll-staff .note {
+        width: 30px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: transparent;
+        transform: rotate(-18deg);
+      }
+
+      .scroll-staff .note::after {
+        content: "";
+        position: absolute;
+        right: 2px;
+        bottom: 9px;
+        width: 2px;
+        height: 54px;
+        border-radius: 999px;
+        background: currentColor;
+        color: inherit;
+        transform: rotate(18deg);
+        transform-origin: bottom;
+      }
+
+      .scroll-staff .note.stem-down::after {
+        top: 9px;
+        right: auto;
+        bottom: auto;
+        left: 2px;
+      }
+
+      .scroll-staff .note.half {
+        box-shadow: inset 0 0 0 6px var(--ink);
+        background: #fbfcfe;
+      }
+
+      .scroll-staff .note.sample-active {
+        background: var(--blue);
+        box-shadow: 0 0 0 8px rgba(38, 110, 241, 0.16);
+      }
+
+      .scroll-staff .note.half.sample-active {
+        box-shadow:
+          inset 0 0 0 6px var(--blue),
+          0 0 0 8px rgba(38, 110, 241, 0.16);
+      }
+
+      .staff-symbol {
+        position: absolute;
+        color: var(--ink);
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .clef {
+        left: 18px;
+        top: 26px;
+        font-size: 72px;
+      }
+
+      .key-signature {
+        left: 76px;
+        top: 50px;
+        font-size: 34px;
+      }
+
+      .time-signature {
+        left: 116px;
+        top: 44px;
+        display: grid;
+        gap: 0;
+        font-size: 30px;
+        text-align: center;
+      }
+
+      .tempo-mark {
+        left: 18px;
+        top: 8px;
+        color: var(--muted);
+        font: 700 13px/1.2 Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .measure-number {
+        top: 16px;
+        color: var(--muted);
+        font: 700 11px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .barline {
+        position: absolute;
+        top: 34px;
+        width: 2px;
+        height: 120px;
+        border-radius: 999px;
+        background: var(--ink);
+      }
+
+      .double-barline {
+        width: 7px;
+        border-right: 3px solid var(--ink);
+        background: var(--ink);
+      }
+
+      .repeat-dot {
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--ink);
+      }
+
+      .ending-bracket {
+        position: absolute;
+        top: 20px;
+        height: 18px;
+        border-top: 2px solid var(--ink);
+        border-left: 2px solid var(--ink);
+        color: var(--ink);
+        font: 700 12px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+        padding: 2px 0 0 6px;
+      }
+
+      .dynamic {
+        position: absolute;
+        top: 150px;
+        color: var(--ink);
+        font: italic 800 22px/1 Georgia, "Times New Roman", serif;
+      }
+
+      .articulation {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--ink);
+      }
+
+      .rest {
+        position: absolute;
+        color: var(--ink);
+        font: 700 36px/1 Georgia, "Times New Roman", serif;
+      }
+
+      .slur {
+        position: absolute;
+        height: 28px;
+        border-top: 2px solid var(--ink);
+        border-radius: 50%;
+      }
+
+      .tie {
+        position: absolute;
+        height: 12px;
+        border-bottom: 2px solid var(--ink);
+        border-radius: 50%;
       }
 
       .feedback {
@@ -1072,27 +1229,53 @@
             <div class="playback-grid">
               <div class="panel stack sheet-view">
                 <div class="row">
-                  <strong>Sheet form</strong>
-                  <span class="label">Measure 5</span>
+                  <strong>Published-style sheet music</strong>
+                  <span class="label">Treble clef / 4-4 / repeats</span>
                 </div>
                 <div class="staff scroll-staff">
                   <span class="staff-playhead"></span>
                   <div class="staff-track">
-                    <span class="note" data-sample-index="0" data-note="E" style="left: 54px; top: 74px">E</span>
-                    <span class="note" data-sample-index="1" data-note="E" style="left: 118px; top: 74px">E</span>
-                    <span class="note" data-sample-index="2" data-note="F" style="left: 182px; top: 50px">F</span>
-                    <span class="note" data-sample-index="3" data-note="G" style="left: 246px; top: 38px">G</span>
-                    <span class="note" data-sample-index="4" data-note="G" style="left: 310px; top: 38px">G</span>
-                    <span class="note" data-sample-index="5" data-note="F" style="left: 374px; top: 50px">F</span>
-                    <span class="note" data-sample-index="6" data-note="E" style="left: 438px; top: 74px">E</span>
-                    <span class="note" data-sample-index="7" data-note="D" style="left: 502px; top: 98px">D</span>
-                    <span class="note" data-sample-index="8" data-note="C" style="left: 566px; top: 122px">C</span>
-                    <span class="note" data-sample-index="9" data-note="C" style="left: 630px; top: 122px">C</span>
-                    <span class="note" data-sample-index="10" data-note="D" style="left: 694px; top: 98px">D</span>
-                    <span class="note" data-sample-index="11" data-note="E" style="left: 758px; top: 74px">E</span>
-                    <span class="note" data-sample-index="12" data-note="E" style="left: 822px; top: 74px">E</span>
-                    <span class="note" data-sample-index="13" data-note="D" style="left: 886px; top: 98px">D</span>
-                    <span class="note" data-sample-index="14" data-note="D" style="left: 950px; top: 98px">D</span>
+                    <span class="staff-symbol tempo-mark">Allegro moderato  q = 92</span>
+                    <span class="staff-symbol clef">𝄞</span>
+                    <span class="staff-symbol key-signature">♯</span>
+                    <span class="staff-symbol time-signature"><span>4</span><span>4</span></span>
+                    <span class="measure-number" style="left: 160px">5</span>
+                    <span class="measure-number" style="left: 416px">6</span>
+                    <span class="measure-number" style="left: 672px">7</span>
+                    <span class="measure-number" style="left: 928px">8</span>
+                    <span class="barline double-barline" style="left: 154px"></span>
+                    <span class="repeat-dot" style="left: 168px; top: 82px"></span>
+                    <span class="repeat-dot" style="left: 168px; top: 106px"></span>
+                    <span class="barline" style="left: 410px"></span>
+                    <span class="barline" style="left: 666px"></span>
+                    <span class="barline" style="left: 922px"></span>
+                    <span class="barline double-barline" style="left: 1072px"></span>
+                    <span class="repeat-dot" style="left: 1058px; top: 82px"></span>
+                    <span class="repeat-dot" style="left: 1058px; top: 106px"></span>
+                    <span class="ending-bracket" style="left: 674px; width: 130px">1.</span>
+                    <span class="ending-bracket" style="left: 928px; width: 124px">2.</span>
+                    <span class="dynamic" style="left: 188px">mf</span>
+                    <span class="dynamic" style="left: 704px">p</span>
+                    <span class="slur" style="left: 214px; top: 46px; width: 176px"></span>
+                    <span class="tie" style="left: 808px; top: 92px; width: 78px"></span>
+                    <span class="rest" style="left: 612px; top: 72px">𝄽</span>
+                    <span class="articulation" style="left: 276px; top: 28px"></span>
+                    <span class="articulation" style="left: 340px; top: 28px"></span>
+                    <span class="note" data-sample-index="0" data-note="E" aria-label="E quarter note" style="left: 190px; top: 74px"></span>
+                    <span class="note" data-sample-index="1" data-note="E" aria-label="E quarter note" style="left: 254px; top: 74px"></span>
+                    <span class="note" data-sample-index="2" data-note="F" aria-label="F quarter note" style="left: 318px; top: 50px"></span>
+                    <span class="note" data-sample-index="3" data-note="G" aria-label="G quarter note" style="left: 382px; top: 38px"></span>
+                    <span class="note stem-down" data-sample-index="4" data-note="G" aria-label="G quarter note" style="left: 446px; top: 38px"></span>
+                    <span class="note stem-down" data-sample-index="5" data-note="F" aria-label="F quarter note" style="left: 510px; top: 50px"></span>
+                    <span class="note" data-sample-index="6" data-note="E" aria-label="E quarter note" style="left: 574px; top: 74px"></span>
+                    <span class="note" data-sample-index="7" data-note="D" aria-label="D quarter note" style="left: 638px; top: 98px"></span>
+                    <span class="note" data-sample-index="8" data-note="C" aria-label="C quarter note" style="left: 702px; top: 122px"></span>
+                    <span class="note" data-sample-index="9" data-note="C" aria-label="C quarter note" style="left: 766px; top: 122px"></span>
+                    <span class="note" data-sample-index="10" data-note="D" aria-label="D quarter note" style="left: 830px; top: 98px"></span>
+                    <span class="note" data-sample-index="11" data-note="E" aria-label="E quarter note" style="left: 894px; top: 74px"></span>
+                    <span class="note" data-sample-index="12" data-note="E" aria-label="E quarter note" style="left: 958px; top: 74px"></span>
+                    <span class="note" data-sample-index="13" data-note="D" aria-label="D quarter note" style="left: 1022px; top: 98px"></span>
+                    <span class="note half" data-sample-index="14" data-note="D" aria-label="D half note tied" style="left: 1086px; top: 98px"></span>
                   </div>
                 </div>
               </div>
