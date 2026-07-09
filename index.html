@@ -2457,6 +2457,7 @@
         clearFallingNotes();
         practicePanel.dataset.playing = "false";
         playbackButton.textContent = "Play Ode to Joy sample";
+        playbackButton.setAttribute("aria-pressed", "false");
         targetNote.textContent = "E";
         pianoKeys.forEach((key) => key.classList.remove("sample-active"));
         updateInstrumentGuide("E", 0);
@@ -2483,6 +2484,7 @@
 
         practicePanel.dataset.playing = "true";
         playbackButton.textContent = "Pause sample";
+        playbackButton.setAttribute("aria-pressed", "true");
         sampleStatus.textContent =
           playbackRepeat === "loop" && cycleIndex > 0
             ? `Loop ${cycleIndex + 1} of Ode to Joy...`
@@ -2551,7 +2553,7 @@
           .forEach((item) => item.classList.add("sample-active"));
       }
 
-      playbackButton.addEventListener("click", () => {
+      playbackButton.addEventListener("click", async () => {
         const isPlaying = practicePanel.dataset.playing === "true";
 
         if (isPlaying) {
@@ -2561,8 +2563,20 @@
         }
 
         stopSample();
+        sampleStatus.textContent = "Starting sample...";
         audioContext = audioContext || new AudioContext();
-        audioContext.resume();
+        try {
+          await audioContext.resume();
+        } catch (error) {
+          sampleStatus.textContent = "Tap the sample song button again to start audio.";
+          return;
+        }
+
+        if (audioContext.state !== "running") {
+          sampleStatus.textContent = "Tap the sample song button again to start audio.";
+          return;
+        }
+
         playbackRunId += 1;
         scheduleSampleCycle(playbackRunId, 0);
       });
