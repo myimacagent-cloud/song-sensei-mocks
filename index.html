@@ -823,6 +823,12 @@
         overflow: hidden;
       }
 
+      .falling-note-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
       .fingerboard.string-family {
         background: #fbfcfe;
       }
@@ -864,6 +870,55 @@
         background: var(--blue);
         color: #fff;
         box-shadow: 0 0 0 8px rgba(38, 110, 241, 0.16);
+      }
+
+      .falling-note {
+        position: absolute;
+        z-index: 3;
+        display: grid;
+        place-items: center;
+        width: 54px;
+        height: 58px;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        border-radius: 14px;
+        color: #fff;
+        font-weight: 850;
+        text-align: center;
+        box-shadow: 0 14px 24px rgba(23, 33, 43, 0.16);
+        transform: translate(-50%, -50%);
+        transition:
+          top 120ms linear,
+          left 120ms linear,
+          opacity 120ms linear,
+          transform 120ms linear;
+      }
+
+      .falling-note[data-hand="left"] {
+        background: #f2b84b;
+      }
+
+      .falling-note[data-hand="right"] {
+        background: #266ef1;
+      }
+
+      .falling-note[data-kind="guitar"] {
+        width: 62px;
+        height: 66px;
+        border-radius: 16px;
+      }
+
+      .falling-note-label {
+        display: block;
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      .falling-note-sub {
+        display: block;
+        margin-top: 4px;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
       .guide-cue {
@@ -916,7 +971,7 @@
         position: relative;
         contain: paint;
         overflow: hidden;
-        height: 198px;
+        height: 232px;
         border: 1px solid var(--line);
         border-radius: 8px;
         background:
@@ -928,9 +983,11 @@
 
       .playhead {
         position: absolute;
-        inset: 0 auto 0 45%;
+        inset: auto 14px 54px 14px;
         z-index: 2;
-        width: 3px;
+        height: 4px;
+        width: auto;
+        border-radius: 999px;
         background: var(--blue);
         box-shadow: 0 0 0 6px rgba(38, 110, 241, 0.12);
       }
@@ -938,30 +995,66 @@
       .piano-roll-track {
         position: absolute;
         inset: 0;
-        width: 1080px;
+        width: 100%;
       }
 
       .roll-note {
         position: absolute;
-        height: 22px;
-        border-radius: 6px;
-        background: #9edcc2;
+        display: grid;
+        place-items: center;
+        width: 54px;
+        height: 58px;
+        border-radius: 14px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 2px rgba(10, 16, 24, 0.22);
+        box-shadow:
+          0 12px 22px rgba(23, 33, 43, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        transform: translateY(0);
+        overflow: hidden;
+        transition:
+          top 70ms linear,
+          opacity 90ms linear,
+          transform 90ms linear;
+      }
+
+      .roll-note::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+      }
+
+      .roll-note-label {
+        position: relative;
+        z-index: 1;
+        transform: translateY(1px);
+      }
+
+      .roll-note[data-hand="left"] {
+        background: #f2b84b;
+      }
+
+      .roll-note[data-hand="right"] {
+        background: #266ef1;
       }
 
       .roll-note.now {
-        background: var(--blue);
+        transform: translateY(2px) scale(1.02);
       }
 
       .roll-note.sample-active {
-        background: var(--blue);
-        box-shadow: 0 0 0 7px rgba(38, 110, 241, 0.12);
+        box-shadow: 0 0 0 7px rgba(38, 110, 241, 0.16);
       }
 
       .keyboard {
         position: relative;
         display: grid;
         grid-template-columns: repeat(9, 1fr);
-        height: 74px;
+        height: 88px;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: #fff;
@@ -973,7 +1066,7 @@
         display: grid;
         place-items: end center;
         border-right: 1px solid var(--line);
-        padding-bottom: 8px;
+        padding-bottom: 10px;
         color: var(--muted);
         font-size: 12px;
       }
@@ -1003,6 +1096,25 @@
         border-radius: 0 0 5px 5px;
         background: var(--ink);
         box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+      }
+
+      .black-key::after {
+        content: attr(data-key-note);
+        position: absolute;
+        right: 0;
+        bottom: 5px;
+        left: 0;
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 9px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .black-key.sample-active {
+        background: #1f4fd1;
+        box-shadow:
+          0 2px 0 rgba(0, 0, 0, 0.18),
+          0 0 0 6px rgba(38, 110, 241, 0.16);
       }
 
       .mode-hint {
@@ -1040,6 +1152,57 @@
         font-weight: 760;
       }
 
+      .tempo-switch {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        align-items: center;
+      }
+
+      .tempo-switch button {
+        min-height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--muted);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 750;
+        cursor: pointer;
+      }
+
+      .tempo-switch button.selected {
+        border-color: var(--blue);
+        background: #edf4ff;
+        color: var(--blue);
+        box-shadow: inset 0 0 0 1px var(--blue);
+      }
+
+      .repeat-switch {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .repeat-switch button {
+        min-height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--muted);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 750;
+        cursor: pointer;
+      }
+
+      .repeat-switch button.selected {
+        border-color: var(--green);
+        background: #e8f7ef;
+        color: var(--green);
+        box-shadow: inset 0 0 0 1px var(--green);
+      }
+
       .practice-panel[data-view="sheet"] .piano-view,
       .practice-panel[data-view="piano"] .sheet-view {
         display: none;
@@ -1060,8 +1223,8 @@
 
       @keyframes pulse-note {
         50% {
-          transform: scaleY(1.2);
-          box-shadow: 0 0 0 7px rgba(38, 110, 241, 0.12);
+          transform: translateY(2px) scale(1.04);
+          box-shadow: 0 0 0 7px rgba(38, 110, 241, 0.16);
         }
       }
 
@@ -1222,7 +1385,21 @@
               <span class="sample-step" data-sample-index="13">D</span>
               <span class="sample-step" data-sample-index="14">D</span>
             </div>
-            <div class="sample-status">Ready to sample Ode to Joy.</div>
+            <div class="row">
+              <div class="sample-status">Ready to sample Ode to Joy.</div>
+              <div class="stack">
+                <div class="tempo-switch" aria-label="Playback tempo">
+                  <button type="button" data-tempo="0.75">75%</button>
+                  <button class="selected" type="button" data-tempo="1">100%</button>
+                  <button type="button" data-tempo="1.25">125%</button>
+                </div>
+                <div class="repeat-switch" aria-label="Repeat practice">
+                  <button class="selected" type="button" data-repeat="once">Once</button>
+                  <button type="button" data-repeat="twice">2x</button>
+                  <button type="button" data-repeat="loop">Loop</button>
+                </div>
+              </div>
+            </div>
             <div class="view-toggle">
               <button type="button" data-view-option="sheet">Sheet</button>
               <button type="button" data-view-option="piano">Instrument Guide</button>
@@ -1318,16 +1495,17 @@
                     <span class="key" data-key-note="B">B</span>
                     <span class="key">C</span>
                     <span class="key">D</span>
-                    <span class="black-key" style="left: 7.5%"></span>
-                    <span class="black-key" style="left: 18.6%"></span>
-                    <span class="black-key" style="left: 40.9%"></span>
-                    <span class="black-key" style="left: 52%"></span>
-                    <span class="black-key" style="left: 63.1%"></span>
-                    <span class="black-key" style="left: 85.3%"></span>
+                    <span class="black-key" data-key-note="C#" style="left: 7.5%"></span>
+                    <span class="black-key" data-key-note="D#" style="left: 18.6%"></span>
+                    <span class="black-key" data-key-note="F#" style="left: 40.9%"></span>
+                    <span class="black-key" data-key-note="G#" style="left: 52%"></span>
+                    <span class="black-key" data-key-note="A#" style="left: 63.1%"></span>
+                    <span class="black-key" data-key-note="C#2" style="left: 85.3%"></span>
                   </div>
                 </div>
                 <div class="instrument-guide" data-guide="strings">
                   <div class="fingerboard string-family" aria-label="String instrument fingerboard">
+                    <div class="falling-note-layer" data-falling-stage="strings"></div>
                     <span class="string-line" style="top: 22%"></span><span class="string-name" style="top: 22%">E</span>
                     <span class="string-line" style="top: 42%"></span><span class="string-name" style="top: 42%">A</span>
                     <span class="string-line" style="top: 62%"></span><span class="string-name" style="top: 62%">D</span>
@@ -1342,6 +1520,7 @@
                 </div>
                 <div class="instrument-guide" data-guide="guitar">
                   <div class="fingerboard" aria-label="Guitar fretboard">
+                    <div class="falling-note-layer" data-falling-stage="guitar"></div>
                     <span class="string-line" style="top: 16%"></span><span class="string-name" style="top: 16%">E</span>
                     <span class="string-line" style="top: 30%"></span><span class="string-name" style="top: 30%">B</span>
                     <span class="string-line" style="top: 44%"></span><span class="string-name" style="top: 44%">G</span>
@@ -1706,6 +1885,8 @@
       const modeButtons = [...document.querySelectorAll("[data-view-option]")];
       const modeHint = document.querySelector(".mode-hint");
       const playbackButton = document.querySelector(".playback-button");
+      const tempoButtons = [...document.querySelectorAll("[data-tempo]")];
+      const repeatButtons = [...document.querySelectorAll("[data-repeat]")];
       const sampleSteps = [...document.querySelectorAll(".sample-step")];
       const sampleStatus = document.querySelector(".sample-status");
       const targetNote = document.querySelector(".target-note");
@@ -1715,6 +1896,11 @@
       const pianoRoll = document.querySelector(".piano-roll");
       const pianoRollTrack = document.querySelector(".piano-roll-track");
       const rollNotes = [...document.querySelectorAll(".roll-note[data-sample-index]")];
+      const pianoKeys = [...document.querySelectorAll(".keyboard .key, .keyboard .black-key")];
+      const fallingStages = {
+        strings: document.querySelector('[data-falling-stage="strings"]'),
+        guitar: document.querySelector('[data-falling-stage="guitar"]'),
+      };
       const guideTitle = document.querySelector(".guide-title");
       const guideModeLabel = document.querySelector(".guide-mode-label");
       const stringNames = [...document.querySelectorAll('[data-guide="strings"] .string-name')];
@@ -1739,6 +1925,9 @@
       const partVisibleCount = document.querySelector(".part-visible-count");
       const partBackingCount = document.querySelector(".part-backing-count");
       const bandLanes = [...document.querySelectorAll(".band-lane")];
+      let playbackTempo = 1;
+      let playbackRepeat = "once";
+      let playbackRunId = 0;
       const sampleEvents = [
         { note: "E", beats: 1 },
         { note: "E", beats: 1 },
@@ -1758,8 +1947,23 @@
       ];
       const beatSeconds = 0.43;
       const totalBeats = sampleEvents.reduce((sum, event) => sum + event.beats, 0);
-      const totalPlaybackSeconds = totalBeats * beatSeconds;
-      practicePanel.style.setProperty("--playback-duration", `${totalPlaybackSeconds}s`);
+      const fallLeadBeats = 2.5;
+      const notePositions = {
+        C: { x: 0.055 },
+        "C#": { x: 0.11 },
+        D: { x: 0.166 },
+        "D#": { x: 0.223 },
+        E: { x: 0.278 },
+        F: { x: 0.389 },
+        "F#": { x: 0.445 },
+        G: { x: 0.5 },
+        "G#": { x: 0.556 },
+        A: { x: 0.611 },
+        "A#": { x: 0.667 },
+        B: { x: 0.722 },
+        "C#2": { x: 0.833 },
+      };
+      const pianoTileTimeline = [];
       const noteFrequencies = {
         C: 261.63,
         D: 293.66,
@@ -1773,6 +1977,139 @@
       let sampleTimers = [];
       let scrollFrame;
       let playbackStartMs = 0;
+
+      function currentBeatSeconds() {
+        return beatSeconds / playbackTempo;
+      }
+
+      function handForNote(note) {
+        return note.startsWith("A") || note.startsWith("B") || note.startsWith("E") || note.startsWith("F") || note.startsWith("G")
+          ? "right"
+          : "left";
+      }
+
+      function pianoXForNote(note) {
+        const normalized = note.replace(/[0-9]+/g, "");
+        return notePositions[normalized]?.x ?? notePositions.C.x;
+      }
+
+      function pianoKeyIndexForNote(note) {
+        const normalized = note.replace(/[0-9]+/g, "");
+        const keyOrder = ["C", "D", "E", "F", "G", "A", "B", "C", "D"];
+        return Math.max(0, keyOrder.indexOf(normalized));
+      }
+
+      function syncPianoTiles(elapsedBeats) {
+        const startY = -104;
+        const lineY = pianoRoll.clientHeight - 54;
+
+        pianoTileTimeline.forEach((event) => {
+          const tile = rollNotes[event.index];
+          const tileHeight = tile.offsetHeight || 58;
+          const x = pianoRoll.clientWidth * pianoXForNote(event.note) - tile.offsetWidth / 2;
+          const spawnBeat = event.startBeat - fallLeadBeats;
+          const progress = Math.max(0, Math.min(1, (elapsedBeats - spawnBeat) / fallLeadBeats));
+          const landingY = lineY - tileHeight;
+          const y = startY + progress * (landingY - startY);
+          const isVisible = elapsedBeats >= spawnBeat;
+
+          tile.style.left = `${x}px`;
+          tile.style.top = `${y}px`;
+          tile.style.opacity = isVisible ? "1" : "0";
+          tile.classList.toggle("now", Math.abs(elapsedBeats - event.startBeat) < 0.25);
+        });
+      }
+
+      function updatePianoKeyHighlight(note) {
+        const normalized = note.replace(/[0-9]+/g, "");
+        pianoKeys.forEach((key) => {
+          key.classList.toggle("sample-active", key.dataset.keyNote === normalized || key.dataset.keyNote === note);
+        });
+      }
+
+      function resetPianoTiles() {
+        pianoTileTimeline.forEach((event) => {
+          const tile = rollNotes[event.index];
+          tile.style.top = "-104px";
+          tile.style.opacity = "0";
+          tile.classList.remove("now");
+          tile.classList.remove("sample-active");
+        });
+        pianoKeys.forEach((key) => key.classList.remove("sample-active"));
+      }
+
+      function getInstrumentCue(instrument, note) {
+        if (instrument === "guitar") return guitarNoteMap[note];
+        return stringNoteMaps[instrument]?.[note] || stringNoteMaps.violin[note];
+      }
+
+      function noteHandTone(instrument, cue, note) {
+        if (instrument === "guitar") return cue.fret === "0" ? "right" : "left";
+        if (cue.finger === "0") return "right";
+        return cue.hand === "Open" ? "right" : note.startsWith("A") || note.startsWith("B") ? "right" : "left";
+      }
+
+      function clearFallingNotes() {
+        Object.values(fallingStages).forEach((stage) => {
+          if (!stage) return;
+          stage.querySelectorAll(".falling-note").forEach((node) => node.remove());
+        });
+      }
+
+      function spawnInstrumentFallingNote(instrument, note, durationSeconds) {
+        const stage = fallingStages[instrument];
+        if (!stage) return;
+
+        const cue = getInstrumentCue(instrument, note);
+        if (!cue) return;
+
+        const tile = document.createElement("div");
+        tile.className = "falling-note";
+        tile.dataset.kind = instrument;
+        tile.dataset.hand = noteHandTone(instrument, cue, note);
+        tile.innerHTML = `<span class="falling-note-label">${note}</span><span class="falling-note-sub">${instrument === "guitar" ? `Fret ${cue.fret}` : cue.finger === "0" ? "Open" : `Finger ${cue.finger}`}</span>`;
+        stage.appendChild(tile);
+
+        const targetX = `${cue.x}%`;
+        const targetY = `${cue.y}%`;
+        const startY = instrument === "guitar" ? "-18%" : "-24%";
+
+        tile.style.left = targetX;
+        tile.style.top = startY;
+        tile.style.opacity = "0";
+        tile.style.transitionDuration = `${Math.max(0.12, durationSeconds)}s`;
+        requestAnimationFrame(() => {
+          tile.style.opacity = "1";
+          tile.style.top = targetY;
+        });
+
+        setTimeout(() => {
+          tile.style.opacity = "0";
+        }, Math.max(0, durationSeconds * 1000 - 120));
+
+        setTimeout(() => {
+          tile.remove();
+        }, durationSeconds * 1000 + 180);
+      }
+
+      let cumulativeBeat = 0;
+      sampleEvents.forEach((event, index) => {
+        pianoTileTimeline.push({
+          index,
+          note: event.note,
+          startBeat: cumulativeBeat,
+          beats: event.beats,
+        });
+        cumulativeBeat += event.beats;
+      });
+
+      rollNotes.forEach((tile, index) => {
+        const event = sampleEvents[index];
+        tile.dataset.note = event.note;
+        tile.dataset.hand = handForNote(event.note);
+        tile.innerHTML = `<span class="roll-note-label">${event.note}</span>`;
+        tile.style.height = `${Math.max(58, event.beats * 58)}px`;
+      });
 
       const viewCopy = {
         sheet: "Sheet view keeps the music staff big and focused.",
@@ -2006,6 +2343,24 @@
             : `${partCopy[selectedPart].detail} Other instruments play softer behind the learner.`;
       }
 
+      function updateTempoSelection() {
+        tempoButtons.forEach((button) => {
+          button.classList.toggle("selected", Number(button.dataset.tempo) === playbackTempo);
+        });
+      }
+
+      function updateRepeatSelection() {
+        repeatButtons.forEach((button) => {
+          button.classList.toggle("selected", button.dataset.repeat === playbackRepeat);
+        });
+      }
+
+      function repeatLabel() {
+        if (playbackRepeat === "twice") return "2x";
+        if (playbackRepeat === "loop") return "Loop";
+        return "Once";
+      }
+
       partButtons.forEach((button) => {
         button.addEventListener("click", () => {
           selectInstrument(button.dataset.partOption);
@@ -2040,6 +2395,7 @@
       function resetTracksToStart() {
         staffTrack.style.transform = "translateX(0)";
         pianoRollTrack.style.transform = "translateX(0)";
+        resetPianoTiles();
       }
 
       function cueAtBeat(items, elapsedBeats, alignToCenter) {
@@ -2064,27 +2420,92 @@
 
       function syncScrollToBeat(elapsedBeats) {
         setTrackToCue(staffTrack, staff, cueAtBeat(staffNotes, elapsedBeats, true));
-        setTrackToCue(pianoRollTrack, pianoRoll, cueAtBeat(rollNotes, elapsedBeats, false));
+        pianoRollTrack.style.transform = "translateX(0)";
+        syncPianoTiles(elapsedBeats);
       }
 
       function runSyncedScroll() {
         if (practicePanel.dataset.playing !== "true") return;
 
         const elapsedSeconds = Math.max(0, (performance.now() - playbackStartMs) / 1000);
-        syncScrollToBeat(Math.min(totalBeats, elapsedSeconds / beatSeconds));
+        syncScrollToBeat(Math.min(totalBeats, elapsedSeconds / currentBeatSeconds()));
         scrollFrame = requestAnimationFrame(runSyncedScroll);
       }
 
       function stopSample() {
+        playbackRunId += 1;
         sampleTimers.forEach((timer) => clearTimeout(timer));
         sampleTimers = [];
         cancelAnimationFrame(scrollFrame);
         clearSampleHighlights();
+        clearFallingNotes();
         practicePanel.dataset.playing = "false";
         playbackButton.textContent = "Play Ode to Joy sample";
         targetNote.textContent = "E";
+        pianoKeys.forEach((key) => key.classList.remove("sample-active"));
         updateInstrumentGuide("E", 0);
         resetTracksToStart();
+      }
+
+      function scheduleSampleCycle(runId, cycleIndex = 0) {
+        if (practicePanel.dataset.playing !== "true" || runId !== playbackRunId) return;
+        const playbackInstrument = practicePanel.dataset.instrument;
+
+        sampleTimers.forEach((timer) => clearTimeout(timer));
+        sampleTimers = [];
+        clearSampleHighlights();
+        targetNote.textContent = "E";
+        updateInstrumentGuide("E", 0);
+        syncScrollToBeat(0);
+        practicePanel.offsetWidth;
+
+        const startDelaySeconds = 0.08;
+        const beatDuration = currentBeatSeconds();
+        const startTime = audioContext.currentTime + startDelaySeconds;
+        playbackStartMs = performance.now() + startDelaySeconds * 1000;
+        let elapsedBeats = 0;
+
+        practicePanel.dataset.playing = "true";
+        playbackButton.textContent = "Pause sample";
+        sampleStatus.textContent =
+          playbackRepeat === "loop" && cycleIndex > 0
+            ? `Loop ${cycleIndex + 1} of Ode to Joy...`
+            : cycleIndex > 0
+              ? `Repeat ${cycleIndex + 1} of Ode to Joy...`
+              : `Sampling Ode to Joy (${repeatLabel()})...`;
+
+        scrollFrame = requestAnimationFrame(runSyncedScroll);
+
+        sampleEvents.forEach((event, index) => {
+          const offsetSeconds = elapsedBeats * beatDuration;
+          const durationSeconds = event.beats * beatDuration;
+          playTone(event.note, startTime + offsetSeconds, durationSeconds * 0.88);
+          sampleTimers.push(
+            setTimeout(() => {
+              if (practicePanel.dataset.playing === "true" && runId === playbackRunId) {
+                if (["violin", "viola", "cello", "guitar"].includes(playbackInstrument)) {
+                  spawnInstrumentFallingNote(playbackInstrument, event.note, durationSeconds);
+                }
+                highlightSampleStep(index);
+              }
+            }, (startDelaySeconds + offsetSeconds) * 1000),
+          );
+          elapsedBeats += event.beats;
+        });
+
+        sampleTimers.push(
+          setTimeout(() => {
+            if (practicePanel.dataset.playing !== "true" || runId !== playbackRunId) return;
+
+            if (playbackRepeat === "loop" || (playbackRepeat === "twice" && cycleIndex === 0)) {
+              scheduleSampleCycle(runId, cycleIndex + 1);
+              return;
+            }
+
+            stopSample();
+            sampleStatus.textContent = "Nice. That is the opening Ode to Joy phrase.";
+          }, (startDelaySeconds + totalBeats * beatDuration) * 1000 + 140),
+        );
       }
 
       function playTone(note, startTime, duration) {
@@ -2106,6 +2527,7 @@
         clearSampleHighlights();
         targetNote.textContent = event.note;
         updateInstrumentGuide(event.note, index);
+        updatePianoKeyHighlight(event.note);
         sampleStatus.textContent = `Now playing ${event.note}`;
         sampleSteps[index].classList.add("sample-active");
         document
@@ -2125,41 +2547,47 @@
         stopSample();
         audioContext = audioContext || new AudioContext();
         audioContext.resume();
-        syncScrollToBeat(0);
-        practicePanel.offsetWidth;
-        practicePanel.dataset.playing = "true";
-        playbackButton.textContent = "Pause sample";
-        sampleStatus.textContent = "Sampling Ode to Joy...";
+        playbackRunId += 1;
+        scheduleSampleCycle(playbackRunId, 0);
+      });
 
-        const startDelaySeconds = 0.08;
-        const startTime = audioContext.currentTime + startDelaySeconds;
-        playbackStartMs = performance.now() + startDelaySeconds * 1000;
-        let elapsedBeats = 0;
-        scrollFrame = requestAnimationFrame(runSyncedScroll);
+      tempoButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          playbackTempo = Number(button.dataset.tempo);
+          updateTempoSelection();
 
-        sampleEvents.forEach((event, index) => {
-          const offsetSeconds = elapsedBeats * beatSeconds;
-          const durationSeconds = event.beats * beatSeconds;
-          playTone(event.note, startTime + offsetSeconds, durationSeconds * 0.88);
-          sampleTimers.push(setTimeout(() => highlightSampleStep(index), (startDelaySeconds + offsetSeconds) * 1000));
-          elapsedBeats += event.beats;
-        });
-
-        sampleTimers.push(
-          setTimeout(() => {
+          if (practicePanel.dataset.playing === "true") {
             stopSample();
-            sampleStatus.textContent = "Nice. That is the opening Ode to Joy phrase.";
-          }, (startDelaySeconds + totalPlaybackSeconds) * 1000 + 140),
-        );
+            sampleStatus.textContent = `Tempo switched to ${Math.round(playbackTempo * 100)}%.`;
+          } else {
+            sampleStatus.textContent = `Tempo set to ${Math.round(playbackTempo * 100)}%.`;
+          }
+        });
+      });
+
+      repeatButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          playbackRepeat = button.dataset.repeat;
+          updateRepeatSelection();
+
+          if (practicePanel.dataset.playing === "true") {
+            stopSample();
+            sampleStatus.textContent = `Repeat set to ${repeatLabel()}.`;
+          } else {
+            sampleStatus.textContent = `Repeat set to ${repeatLabel()}.`;
+          }
+        });
       });
 
       resetTracksToStart();
       updatePartPanel();
+      updateTempoSelection();
+      updateRepeatSelection();
       updateInstrumentGuide("E", 0);
       window.addEventListener("resize", () => {
         if (practicePanel.dataset.playing === "true") {
           const elapsedSeconds = Math.max(0, (performance.now() - playbackStartMs) / 1000);
-          syncScrollToBeat(Math.min(totalBeats, elapsedSeconds / beatSeconds));
+          syncScrollToBeat(Math.min(totalBeats, elapsedSeconds / currentBeatSeconds()));
           return;
         }
 
