@@ -2478,7 +2478,7 @@
 
         const startDelaySeconds = 0.08;
         const beatDuration = currentBeatSeconds();
-        const startTime = audioContext.currentTime + startDelaySeconds;
+        const startTime = audioContext ? audioContext.currentTime + startDelaySeconds : 0;
         playbackStartMs = performance.now() + startDelaySeconds * 1000;
         let elapsedBeats = 0;
 
@@ -2497,7 +2497,9 @@
         sampleEvents.forEach((event, index) => {
           const offsetSeconds = elapsedBeats * beatDuration;
           const durationSeconds = event.beats * beatDuration;
-          playTone(event.note, startTime + offsetSeconds, durationSeconds * 0.88);
+          if (audioContext) {
+            playTone(event.note, startTime + offsetSeconds, durationSeconds * 0.88);
+          }
           sampleTimers.push(
             setTimeout(() => {
               if (practicePanel.dataset.playing === "true" && runId === playbackRunId) {
@@ -2527,6 +2529,8 @@
       }
 
       function playTone(note, startTime, duration) {
+        if (!audioContext) return;
+
         const oscillator = audioContext.createOscillator();
         const gain = audioContext.createGain();
 
@@ -2536,8 +2540,12 @@
         gain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
         oscillator.connect(gain).connect(audioContext.destination);
-        oscillator.start(startTime);
-        oscillator.stop(startTime + duration + 0.02);
+        try {
+          oscillator.start(startTime);
+          oscillator.stop(startTime + duration + 0.02);
+        } catch (error) {
+          // If the browser refuses to schedule audio, keep the visual sample going.
+        }
       }
 
       function highlightSampleStep(index) {
@@ -2553,7 +2561,7 @@
           .forEach((item) => item.classList.add("sample-active"));
       }
 
-      playbackButton.addEventListener("click", async () => {
+      playbackButton.addEventListener("click", () => {
         const isPlaying = practicePanel.dataset.playing === "true";
 
         if (isPlaying) {
@@ -2564,21 +2572,25 @@
 
         stopSample();
         sampleStatus.textContent = "Starting sample...";
-        audioContext = audioContext || new AudioContext();
-        try {
-          await audioContext.resume();
-        } catch (error) {
-          sampleStatus.textContent = "Tap the sample song button again to start audio.";
-          return;
-        }
-
-        if (audioContext.state !== "running") {
-          sampleStatus.textContent = "Tap the sample song button again to start audio.";
-          return;
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (!audioContext && AudioCtor) {
+          try {
+            audioContext = new AudioCtor();
+          } catch (error) {
+            audioContext = null;
+          }
         }
 
         playbackRunId += 1;
         scheduleSampleCycle(playbackRunId, 0);
+
+        if (audioContext && audioContext.state === "suspended") {
+          audioContext.resume().catch(() => {
+            sampleStatus.textContent = "Visual sample is running, but audio is blocked by the browser.";
+          });
+        } else if (!audioContext) {
+          sampleStatus.textContent = "Visual sample is running, but this browser has no Web Audio support.";
+        }
       });
 
       tempoButtons.forEach((button) => {
