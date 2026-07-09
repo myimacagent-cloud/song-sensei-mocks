@@ -187,6 +187,13 @@
         cursor: pointer;
       }
 
+      .playback-button {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        touch-action: manipulation;
+      }
+
       .ghost {
         background: #eef3f9;
         color: var(--ink);
@@ -1250,6 +1257,15 @@
 
         .playback-grid {
           grid-template-columns: 1fr;
+        }
+
+        .practice-panel .row {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .playback-button {
+          width: 100%;
         }
 
         .option-grid,
